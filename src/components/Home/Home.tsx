@@ -3,6 +3,7 @@ import { colors, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import superhero_costumes from '../../assets/images/superhero_costumes.jpeg';
 import herologo from '../../assets/images/herologo.jpeg';
+import cap_shield from '../../assets/images/cap_shield.png'
 import { Link } from 'react-router-dom';
 
 interface Props{
@@ -82,7 +83,7 @@ export const Home = ( props:Props) => {
 
                     <h1 className={ `${classes.logo} `}>
                         <a href="#" className={ `${classes.logo_a} ${classes.logo_navigation}` }>
-                            <img src="herologo" alt="" />
+                            <img src={cap_shield} alt="" width="120" />
                         </a>
                     </h1>
 
@@ -101,7 +102,7 @@ export const Home = ( props:Props) => {
                 <div className={classes.main_text}>
                     <h1>{ props.title }</h1>
                     <p>A Virtual Collection</p>
-                    <Button variant="contained"><img src={herologo} /></Button>
+                    <a href=""><img src={herologo} width='180' /></a>
                 </div>
             </main>
         </div>
