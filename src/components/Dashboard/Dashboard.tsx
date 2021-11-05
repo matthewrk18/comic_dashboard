@@ -1,29 +1,37 @@
-import {useState} from 'react'
-import { Drawer as MUIDrawer, 
-    ListItem, 
-    List, 
-    ListItemIcon, 
-    ListItemText, 
+import { useState } from 'react';
+import { DataTable, ComicForm } from '../../components';
+import { Drawer as MUIDrawer,
+    ListItem,
+    List,
+    ListItemIcon,
+    ListItemText,
     Theme,
-    useTheme, 
-    makeStyles, 
+    useTheme,
+    makeStyles,
     createStyles,
     AppBar,
     Toolbar,
     IconButton,
     Typography,
     Divider,
-    Button
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle
+
 } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import MenuIcon from '@material-ui/icons/Menu'
+import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import clsx from 'clsx';
-import { RouteComponentProps, withRouter, Switch, Route } from "react-router-dom";
-import {DataTable} from '..'
+import { RouteComponentProps, withRouter, Switch, Route } from 'react-router';
 
-const drawerWidth = 240;
+;
+
+const drawerWidth = 240; 
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -84,33 +92,43 @@ const useStyles = makeStyles((theme: Theme) =>
         toolbar:{
             display: 'flex',
         },
-        toolbar_button: {
+        toolbarButton: {
             marginLeft: 'auto'
         }
     }),
     );
 
 
-interface DashProps{
-    history: RouteComponentProps["history"];
-    location: RouteComponentProps['location'];
-    match: RouteComponentProps['match'];
-}
+    interface DashProps{
+        history: RouteComponentProps["history"];
+        location: RouteComponentProps["location"];
+        match: RouteComponentProps["match"];
+    }
+    
 
-    export const Dashboard = withRouter(( props:DashProps ) => {
+
+    export const Dashboard = withRouter((props:DashProps) =>{
         console.log(props)
         const { history } = props;
         const classes = useStyles();
         const theme = useTheme();
         const [open, setOpen] = useState(false);
+        const [dialogOpen, setDialogOpen] = useState(false)
     
-        const handleDrawerOpen = () => {
-            setOpen(true);
+        const handleDrawerOpen = () =>{
+            setOpen(true)
+        };
+        const handleDrawerClose = () =>{
+            setOpen(false)
         };
     
-        const handleDrawerClose = () => {
-            setOpen(false);
-        };
+        const handleDialogClickOpen = () => {
+            setDialogOpen(true);
+        }
+    
+        const handleDialogClickClose = () => {
+            setDialogOpen(false);
+        }
     
         const itemsList = [
             {
@@ -118,81 +136,78 @@ interface DashProps{
                 onClick: () => history.push('/')
             },
             {
-                text: 'Sign In',
+                text: 'Sign Out',
                 onClick: () => history.push('/signin')
             }
         ];
     
         return (
-        <div className={classes.root}>
-
-            <CssBaseline />
-            
-            <AppBar
-                position="fixed"
-                className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
-                })}
-            >
-            
-                <Toolbar className={classes.toolbar}>
-            
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        className={clsx(classes.menuButton, open && classes.hide)}
-                    >
-                        <MenuIcon />
-
-                    </IconButton>
-                    <Typography variant="h6" noWrap>
-                        Dashboard
-                    </Typography>
-                    <Button className={classes.toolbar_button}>Create New Comic</Button>
-
-                </Toolbar>
-
-            </AppBar>
-
-            <MUIDrawer
-                className={classes.drawer}
-                variant="persistent"
-                anchor="left"
-                open={open}
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-                >
-                <div className={classes.drawerHeader}>
-                    <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </div>
-                <Divider />
-                
-                <List>
-                    {itemsList.map((item, index) => {
-                        const { text, onClick } = item;
-                        return (
-                            <ListItem button key={text} onClick={onClick}>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        )
+            <div className={classes.root}>
+                <CssBaseline />
+                <AppBar 
+                    position='fixed'
+                    className={clsx(classes.appBar, {
+                        [classes.appBarShift]: open
                     })}
-                </List>
-            </MUIDrawer>
-            <main
-            className={clsx(classes.content, {
-                [classes.contentShift]: open,
-            })}
-            >
-            <div className={classes.drawerHeader} />
-    
-            <h1>Hello Comic Fans</h1>
-            { <DataTable /> }
-            </main>
-        </div>
+                >
+                    <Toolbar className={classes.toolbar}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            className={clsx(classes.menuButton, open && classes.hide)}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant='h6' noWrap>
+                            Dashboard
+                        </Typography>
+                        <Button className={classes.toolbarButton} onClick={handleDialogClickOpen}>Create New Comic</Button>
+                            <Dialog open={dialogOpen} onClose={handleDialogClickClose} aria-labelledby="form-dialog-title">
+                                <DialogContent>
+                                    <DialogContentText>Add A New comic</DialogContentText>
+                                    <ComicForm />
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={handleDialogClickClose} color='primary'>Cancel</Button>
+                                    <Button onClick={handleDialogClickClose} color='primary'>Done</Button>
+                                </DialogActions>
+                            </Dialog>
+                    </Toolbar>
+                </AppBar>
+                <MUIDrawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                    classes={{
+                        paper: classes.drawerPaper
+                    }}
+                >
+                    <div className={classes.drawerHeader}>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon />: <ChevronRightIcon />}
+                        </IconButton>
+                    </div>
+                    <Divider />
+                    <List>
+                        {itemsList.map((item) =>{
+                            const { text, onClick } = item;
+                            return (
+                                <ListItem button key={text} onClick={onClick}>
+                                    <ListItemText primary={text} />
+                                </ListItem>
+                            )
+                        })}
+                    </List>
+                </MUIDrawer>
+                <main className={clsx(classes.content, {
+                    [classes.contentShift]: open
+                })}>
+                    <div className={classes.drawerHeader} />
+                    <DataTable></DataTable>
+                </main>
+            </div>
         )
-    });
+    })

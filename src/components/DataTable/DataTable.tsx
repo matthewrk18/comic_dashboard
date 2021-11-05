@@ -1,4 +1,15 @@
-import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';
+import { useState } from 'react';
+import { DataGrid, GridColDef, GridValueGetterParams, GridSelectionModel } from '@material-ui/data-grid';
+import { server_calls } from '../../api';
+import { useGetData } from '../../custom-hooks';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle} from '@material-ui/core';
+import { ComicForm } from '../../components/ComicForm';
 
 
 const columns: GridColDef[] = [
@@ -16,19 +27,16 @@ const columns: GridColDef[] = [
     {
     field: 'volume_num',
     headerName: 'Volume #',
-    type: 'number',
     width: 120
     },
     {
     field: 'issue_num',
     headerName: 'Issue #',
-    type: 'number',
-    width: 110
+    width: 115
     },
     {
     field: 'print_num',
     headerName: 'Print #',
-    type: 'number',
     width: 110
     },
     {
@@ -39,7 +47,6 @@ const columns: GridColDef[] = [
     {
     field: 'cover_price',
     headerName: 'Cover Price',
-    type: 'number',
     width: 110
     },
     {
@@ -54,6 +61,65 @@ const columns: GridColDef[] = [
     },
 ];
 
+
+interface gridData{
+    data:{
+        id?:string;
+    }
+}
+
+export const DataTable = () =>{
+    let { comicData, getData } = useGetData();
+    let [open, setOpen] = useState(false);
+    let [gridData, setData] = useState<gridData>({data: {}})
+    const [selectionModel, setSelectionModel] = useState<any>([])
+
+    let handleOpen = () => {
+        setOpen(true)
+    }
+
+    let handleClose = () => {
+        setOpen(false)
+    }
+
+    let deleteData = async () => {
+        await server_calls.delete(selectionModel)
+        getData()
+        console.log('deleted selection!', selectionModel)
+    }
+
+        return (
+            <div style={{ height: 400, width: '100%' }}>
+            <h2> Comics in Inventory</h2>
+            <DataGrid 
+                rows={comicData} 
+                columns={columns} 
+                pageSize={5} 
+                checkboxSelection 
+                onSelectionModelChange ={ (item) => {
+                setSelectionModel(item)
+                }}
+                {...comicData}
+            />
+            <Button onClick={handleOpen}>Update</Button>
+            <Button variant="contained" color="secondary" onClick={deleteData}>Delete</Button>
+
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Update a Comic</DialogTitle>
+                <DialogContent>
+                <DialogContentText>comic id: {selectionModel}</DialogContentText>
+                <ComicForm id={`${selectionModel}`} />
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleClose} color="primary">Cancel</Button> 
+                <Button onClick={handleClose} color="primary">Done</Button> 
+                </DialogActions>
+            </Dialog>
+            </div>
+        )
+    }
+
+/*
 const rows = [
     { id: 1, publisher: 'Marvel', title: 'Iron Man', volume_num: 1, issue_num: 1, print_num: 1, cover_date: "1/1/99", cover_price: 2.25, condition: "good", comments: "none",},
     { id: 2, publisher: 'Marvel', title: 'Spider Man', volume_num: 1, issue_num: 1, print_num: 1, cover_date: "1/1/99", cover_price: 2.25, condition: "good", comments: "none",},
@@ -76,3 +142,4 @@ export const DataTable = () => {
         </div>
     );
 }
+*/
